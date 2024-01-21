@@ -2,46 +2,64 @@
 let board;
 let score = 0;
 let rows = 4;
-let columns = 4;
+let columns =4;
 
 // This variables will be used to monitor if the user already won
-// If one of these variables value became true, it means the player already won.
+// If one of these variables value become true
 let is2048Exist = false;
 let is4096Exist = false;
 let is8192Exist = false;
 
+
 let startX = 0;
 let startY = 0;
 
-// Functions are callable programmed tasks
 
-function setGame(){
-	
+function setGame() {
+
+
+// board = [
+// 		[32, 8, 4, 0],
+//         [4, 128, 64, 256],
+//         [8, 32, 16, 2],
+//         [16, 2, 256, 1024]
+// 	];
+
+
+		// board = [
+		// 		[32, 8, 4, 512],
+	    //     [4, 128, 64, 8192],
+	    //     [8, 2048, 16, 2],
+	    //     [16, 4096, 256, 1024]
+		// ];
+
+
 	board = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0]
-    ];
+		[0,0,0,0],
+		[0,0,0,0],
+		[0,0,0,0],
+		[0,0,0,0]
+	]; 
+
 	// Backend board
 	// Goal, we will use the backend board to design and move the tiles of the frontend board.
 
-	// Loops are code to repeat tasks inside it, until it fulfill its task
+	// Loops are code to repeat tasks inside it , until it fullfill its task
 
-	for(let r=0; r < rows; r++){
-		for(let c=0; c < columns; c++ ){
+	for(let r=0; r< rows; r++){
+		for(let c=0; c< columns; c++ ){
 
 			// This code is to create a tile through creating div elements
 			let tile = document.createElement("div");
 
-			// Each tile will have an id based on its row and column postion through this code.
+			// Each tile will have an id based on its row and column position through this code.
 			tile.id = r.toString() + "-" + c.toString();
 
 			// Get the number of a tile
 			let num = board[r][c];
 
 			// Use the number to update the tile's appearance
-			updateTile(tile, num);
+			updateTile(tile,num);
 
 			// Add the created tile with id to the frontend game board
 			document.getElementById("board").append(tile);
@@ -51,6 +69,9 @@ function setGame(){
 	setTwo();
 	setTwo();
 }
+
+
+
 
 // This function is to update the color of the tile based on its number
 function updateTile(tile, num){
@@ -79,15 +100,17 @@ function updateTile(tile, num){
 
 
 window.onload = function(){
-	// setGame() is called to be executed
-	setGame();
+	//setGame is called to be executed
+	setGame()
 }
 
+
 function filterZero(row){
-	return row.filter(num => num != 0);
+	return row.filter(num => num !=0);
 }
 
 function slide(row){
+
 	row = filterZero(row);
 
 	for(let i = 0; i < row.length - 1; i++){
@@ -106,20 +129,21 @@ function slide(row){
             // merge them by doubling the first one
             row[i] *= 2;
             // and setting the second one to zero.      
-            row[i+1] = 0;   
-            score += row[i]; // This code is to change our score;    
+            row[i+1] = 0;  
+            score += row[i]; // This code is to change our score     
         } // [2, 2, 2] -> [4, 0, 2]
 
      }
 
-     row = filterZero(row); // [4, 2]
+     row = filterZero(row); // [4,2]
 
      while(row.length < columns){
      	row.push(0);
-     } // [4, 2, 0, 0]
+     } // [4,2,0,0]
 
-     return row;
+     return row
 }
+
 
 function handleSlide(e){
 	console.log(e.code); // e.code value represents what key is being pressed in our keyboard
@@ -129,19 +153,19 @@ function handleSlide(e){
 		// Prevent default behavior (scrolling) on keydown
 		e.preventDefault();
 
-		if(e.code == "ArrowLeft" && canMoveLeft){
+		if(e.code == "ArrowLeft" && canMoveLeft()){
 			slideLeft();
 			setTwo();
 		}
-		else if(e.code == "ArrowRight" && canMoveRight){
+		else if(e.code == "ArrowRight" && canMoveRight()){
 			slideRight();
 			setTwo();
 		}
-		else if(e.code == "ArrowUp" && canMoveUp){
+		else if(e.code == "ArrowUp" && canMoveUp()){
 			slideUp();
 			setTwo();
 		}
-		else if(e.code == "ArrowDown" && canMoveDown){
+		else if(e.code == "ArrowDown" && canMoveDown()){
 			slideDown();
 			setTwo();
 		}
@@ -163,77 +187,91 @@ function handleSlide(e){
 
 }
 
+
 document.addEventListener("keydown", handleSlide);
 
+
 function slideLeft(){
-	// iterate through each row
-	for(let r=0; r<rows; r++){
 
-		// All tiles values per row are saved in a container
-		let row = board[r];
+// iterate through each row
+for(let r=0; r<rows; r++){
 
-		// Line for animation
-		let originalRow = row.slice(); // initial state of the row before the movement
+	// All tiles values per row are saved in a container
+	let row = board[r]
 
-		// We used slide function to merge tiles with the same values
-		row = slide(row);
-		// Update the row with the merged tile/s
-		board[r] = row;
+	//Line for animation
+	let originalRow = row.slice(); // initial state of the row before the movement
 
-		// Because of this loop, we are able to update the ids and color of all tiles
-		for(let c = 0; c<columns; c++){
-			let tile = document.getElementById(r.toString() + "-" + c.toString()); // update id
-			let num = board[r][c];
-			updateTile(tile, num); // update color using updateTile function
 
-			if(originalRow[c] !== num && num !== 0 ){
+	// We used slide function to merge tiles with the same values
+	row = slide(row);
+	// Update the row with the merge tile/s
+	board[r] = row;
 
-				tile.style.animation = "slide-from-right 0.3s";
+	// Because of this loop, we are able to update the ids and color of all tiles
+	for(let c = 0; c<columns; c++){
+		let tile = document.getElementById(r.toString() + "-" + c.toString());
+		let num = board[r][c];
+		updateTile(tile, num); // update color using updateTile function
 
-				setTimeout(() => {
-					tile.style.animation = "";
-				}, 300);
+		if(originalRow[c] !== num && num !==0){
 
-			}
+			tile.style.animation = "slide-from-right 0.3s";
+		
+			setTimeout(()=>{
+				tile.style.animation = "";
+			}, 300);
+
 		}
+
 	}
+}
+
 }
 
 
 function slideRight(){
-	// iterate through each row
-	for(let r=0; r<rows; r++){
 
-		// All tiles values per row are saved in a container
-		let row = board[r];
+// iterate through each row
+for(let r=0; r<rows; r++){
 
-		let originalRow = row.slice(); // initial state of the row before the movement
+	// All tiles values per row are saved in a container
+	let row = board[r]
 
-		row.reverse();
+	let originalRow = row.slice(); // initial state of the row before the movement
 
-		// We used slide function to merge tiles with the same values
-		row = slide(row);
-		row.reverse();
-		// Update the row with the merged tile/s
-		board[r] = row;
 
-		// Because of this loop, we are able to update the ids and color of all tiles
-		for(let c = 0; c<columns; c++){
-			let tile = document.getElementById(r.toString() + "-" + c.toString()); // update id
-			let num = board[r][c];
-			updateTile(tile, num); // update color using updateTile function
+	row.reverse();
 
-			if(originalRow[c] !== num && num !== 0 ){
+	// We used slide function to merge tiles with the same values
+	row = slide(row);
+	
 
-				tile.style.animation = "slide-from-left 0.3s";
+	row.reverse();
 
-				setTimeout(() => {
-					tile.style.animation = "";
-				}, 300);
 
-			}
+	// Update the row with the merge tile/s
+	board[r] = row;
+
+	// Because of this loop, we are able to update the ids and color of all tiles
+	for(let c = 0; c<columns; c++){
+		let tile = document.getElementById(r.toString() + "-" + c.toString());
+		let num = board[r][c];
+		updateTile(tile, num); // update color using updateTile function
+	
+		if(originalRow[c] !== num && num !==0){
+
+			tile.style.animation = "slide-from-left 0.3s";
+		
+			setTimeout(()=>{
+				tile.style.animation = "";
+			}, 300);
+
 		}
+
 	}
+}
+
 }
 
 
@@ -241,26 +279,74 @@ function slideRight(){
 function slideUp(){
 	for(let c=0; c<columns; c++){
 		let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+	
 
-		let originalRow = row.slice();
+		let originalRow = row.slice(); // initial state of the row before the movement
 
 		row = slide(row);
 
 		let changedIndices = [];
-        for (let r = 0; r < rows; r++) { 
-            if (originalRow[r] !== row[r]) {
-                /* 
-                originalRow = [2, 0, 2, 0]
-                row = [4, 0, 0, 0]
+		for (let r = 0; r < rows; r++) { 
+		    if (originalRow[r] !== row[r]) {
+		        /* 
+		        originalRow = [2, 0, 2, 0]
+		        row = [4, 0, 0, 0]
 
-                1st iteration: 2 !== 4 (True) changeIndices = [0]
-                2nd iteration: 0 !== 0 (False)
-                3rd iteration: 2 !== 0 (True) changeIndices = [0, 2]
-                4th iteration: 0 !== 0 (False)
-                */
-                changedIndices.push(r);
-            }
-        }
+		        1st iteration: 2 !== 4 (True) changeIndices = [0]
+		        2nd iteration: 0 !== 0 (False)
+		        3rd iteration: 2 !== 0 (True) changeIndices = [0, 2]
+		        4th iteration: 0 !== 0 (False)
+		        */
+		        changedIndices.push(r);
+		    }
+		}
+
+
+
+		// This loop is to update the id of the tile, and its color
+		for(let r=0; r<rows; r++){
+			board[r][c] = row[r];
+
+			let tile = document.getElementById(r.toString() + "-" + c.toString());
+			let num = board[r][c];
+			updateTile(tile, num); // Updates the color of the tile
+		
+
+			if(changedIndices.includes(r) && num !== 0) {
+
+			    tile.style.animation = "slide-from-bottom 0.3s";
+			    // Remove the animation class after the animation is complete
+			    setTimeout(() => {
+			        tile.style.animation = "";
+			    }, 300);
+			}
+
+
+		}
+	}
+}
+
+
+function slideDown(){
+	for(let c=0; c<columns; c++){
+		let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+		
+		// To document original rows
+		let originalRow = row.slice(); 
+
+		row.reverse();
+		row = slide(row);
+		row.reverse(); // Once done in merging we set it back to it's original sequence through reversing again.
+
+
+		// To check which tiles have change its position
+		let changedIndices = [];
+		for (let r = 0; r < rows; r++) { 
+		    if (originalRow[r] !== row[r]) {
+		        changedIndices.push(r);
+		    }
+		}
+
 
 		// This loop is to update the id of the tile, and its color
 		for(let r=0; r<rows; r++){
@@ -272,52 +358,13 @@ function slideUp(){
 
 
 			if(changedIndices.includes(r) && num !== 0) {
-			               
-                tile.style.animation = "slide-from-bottom 0.3s";
-                // Remove the animation class after the animation is complete
-                setTimeout(() => {
-                    tile.style.animation = "";
-                }, 300);
-            }
-
-		}
-	}
-}
-
-function slideDown(){
-	for(let c=0; c<columns; c++){
-		let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
-
-		// To document orginal rows
-		let originalRow = row.slice();
-
-		row.reverse();
-		row = slide(row); 
-		row.reverse(); // Once done in merging we set it back to it's original sequence through reversing again
-
-		// To check which tiles have changed its position
-		let changedIndices = []; // This variable and the loop will record the position of the tiles that have changed.
-		for(let r=0; r<rows; r++){
-			if(originalRow !== row[r]){
-				changedIndices.push(r);
+			    tile.style.animation = "slide-from-top 0.3s";
+			    setTimeout(() => {
+			        tile.style.animation = "";
+			    }, 300);
 			}
-		}
 
-		// This loop is to update the id of the tile, and its color
-		for(let r=0; r<rows; r++){
-			board[r][c] = row[r];
 
-			let tile = document.getElementById(r.toString() + "-" + c.toString());
-			let num = board[r][c];
-			updateTile(tile, num); // Updates the color of the tile
-
-			if(changedIndices.includes(r) && num !== 0){
-				tile.style.animation = "slide-from-top 0.3s";
-
-				setTimeout(() => {
-					tile.style.animation = "";
-				}, 300);
-			}
 		}
 	}
 }
@@ -325,16 +372,19 @@ function slideDown(){
 
 function hasEmptyTile(){
 
-	for(let r = 0; r< rows; r++){
-		for(let c = 0; c < columns; c++){
+	for(let r=0; r< rows; r++){
+		for(let c = 0; c< columns; c++){
+
 			if(board[r][c] == 0){
 				return true;
 			}
+
 		}
 	}
 
 	return false;
 }
+
 
 function setTwo(){
     
@@ -348,9 +398,8 @@ function setTwo(){
 
     // While loop is also like for loop that repeats tasks
     // Here, it will repeat the task until he finds the a random empty tile.
-
+    
     // !true = false
-    // !=true -> is it not equal to true?
 
     while(!found){
         
@@ -365,15 +414,15 @@ function setTwo(){
             board[r][c] = 2;
             let tile = document.getElementById(r.toString() + "-" + c.toString());
             tile.innerText = "2";
-            tile.classList.add("x2");
+            tile.classList.add("x2")
 
             found = true;
         }
     }
 }	
 
-function checkWin(){
 
+function checkWin(){
 	for(let r = 0; r<rows; r++){
 		for(let c = 0; c<columns; c++){
 
@@ -393,6 +442,8 @@ function checkWin(){
 		}
 	}
 }
+
+
 
 function hasLost() {
 
@@ -427,12 +478,10 @@ function hasLost() {
 function restartGame(){
 	for(let r=0; r<rows; r++){
 		for(let c=0; c<columns; c++){
-			board[r][c] = 0;
-			// = equal
-			// == is equal?
+			board[r][c]=0;
 		}
 	}
-	score = 0;
+	score =0;
 	setTwo();
 }
 
@@ -501,6 +550,8 @@ document.addEventListener('touchend', (e) => {
         }, 100); // Adjust the delay time (in milliseconds) as needed
     }
 });
+
+
 
 
 
@@ -583,3 +634,4 @@ function canMoveDown() {
     }
     return false;
 }
+
